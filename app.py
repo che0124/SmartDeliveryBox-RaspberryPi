@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 import lock_control  # 引入解鎖控制模組
-import lcd_name
+import lcd_show
 from RPLCD.i2c import CharLCD
 
 app = Flask(__name__)
@@ -11,20 +11,20 @@ lcd = CharLCD(i2c_expander='PCF8574', address=0x27, port=1,
 def unlock():
     try:
         lock_control.unlock()
-        lcd_name.show(lcd, "unlock success")
-        return jsonify({"message":"unlock success"})
+        lcd_show.show(lcd, "unlock success")
+        
     except Exception as e:
-        lcd_name.show(lcd, "unlock fail")
-        return jsonify({"message":"unlock fail", "error":e})
+        lcd_show.show(lcd, "unlock fail")
+        return jsonify({"message":e})
     
 @app.route('/lock', methods=['POST'])
 def lock():
     try:
         lock_control.lock()
-        lcd_name.show(lcd, "lock fail")
-        return jsonify({"message":"lock successful"})
+        lcd_show.show(lcd, "lock success")
     except Exception as e:
-        return jsonify({"message":"lock fail"})
+        lcd_show.show(lcd, "lock fail")
+        return jsonify({"message":e})
 
 def cleanup():
     """清理 GPIO 設置"""
